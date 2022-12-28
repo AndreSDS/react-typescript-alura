@@ -1,32 +1,37 @@
 import Botao from "../Botao";
 import Relogio from "./Relogio";
-import style from './Cronometro.module.scss';
+import style from "./Cronometro.module.scss";
 import { tempoParaSegundos } from "../../common/utils/time";
-import { ITarefa } from "../../types/tarefa";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useTarefas } from "../context/useTarefas";
 
-interface Props {
-  selecionado: ITarefa | undefined,
-  finalizarTarefa: () => void
-}
+export default function Cronometro() {
+  const [tempo, setTempo] = useState(0);
+  const { tarefas, finalizar } = useTarefas();
+  const timer = useRef<any>();
 
-export default function Cronometro({ selecionado, finalizarTarefa }: Props) {
-  const [tempo, setTempo] = useState<number>();
+  const temTarefaSelecionada = useMemo(() => {
+    return tarefas.find((tarefa) => tarefa.selecionado);
+  }, [tarefas]);
 
   useEffect(() => {
-    if(selecionado?.tempo) {
-      setTempo(tempoParaSegundos(selecionado.tempo));
+    if (temTarefaSelecionada?.selecionado) {
+      setTempo(tempoParaSegundos(temTarefaSelecionada.tempo));
     }
-  },[selecionado]);
+
+    return () => {
+      clearInterval(timer.current);
+    };
+  }, [temTarefaSelecionada]);
 
   function regressiva(contador: number = 0) {
-    setTimeout(() => {
-      if(contador > 0) {
+    timer.current = setTimeout(() => {
+      if (contador > 0) {
         setTempo(contador - 1);
         return regressiva(contador - 1);
       }
-      finalizarTarefa();
-    }, 1000)
+      finalizar();
+    }, 1000);
   }
 
   return (
@@ -35,9 +40,7 @@ export default function Cronometro({ selecionado, finalizarTarefa }: Props) {
       <div className={style.relogioWrapper}>
         <Relogio tempo={tempo} />
       </div>
-      <Botao onClick={() => regressiva(tempo)}>
-        Começar!
-      </Botao>
+      <Botao onClick={() => regressiva(tempo)}>Começar!</Botao>
     </div>
-  )
+  );
 }
