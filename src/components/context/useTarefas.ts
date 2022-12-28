@@ -16,26 +16,16 @@ export const useTarefas = create<UseTarefasProps>((set) => ({
             tarefa
         ]
     })),
-    selecionar: (tarefaSelecionada: ITarefa) => set(state => {
-        return (
-            {
-                tarefas: state.tarefas.map(tarefa => {
-                    if (tarefa.id === tarefaSelecionada.id) {
-                        return {
-                            ...tarefa,
-                            selecionado: true,
-                            tempo: tarefa.tempo
-                        }
-                    } else {
-                        return {
-                            ...tarefa,
-                            selecionado: false,
-                            tempo: '0'
-                        }
-                    }
-                })
+    selecionar: (tarefaSelecionada: ITarefa) => set(state => (
+        {
+            tarefas: state.tarefas.map(tarefa => {
+                const selecionada = tarefa.id === tarefaSelecionada.id
+                return {
+                    ...tarefa,
+                    selecionado: selecionada
+                }
             })
-    }),
+        })),
     finalizar: () => set(state => ({
         tarefas: state.tarefas.map(tarefa => {
             if (tarefa.selecionado) {

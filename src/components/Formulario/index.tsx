@@ -55,7 +55,7 @@ function Formulario() {
           required
         />
       </div>
-      <Botao type="submit">Adicionar</Botao>
+      <Botao disbled={!tarefa} type="submit">Adicionar</Botao>
     </form>
   );
 }

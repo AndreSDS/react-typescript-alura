@@ -9,7 +9,7 @@ export default function Cronometro() {
   const [tempo, setTempo] = useState(0);
   const { tarefas, finalizar } = useTarefas();
   const timer = useRef<any>();
-
+  
   const temTarefaSelecionada = useMemo(() => {
     return tarefas.find((tarefa) => tarefa.selecionado);
   }, [tarefas]);
@@ -18,10 +18,10 @@ export default function Cronometro() {
     if (temTarefaSelecionada?.selecionado) {
       setTempo(tempoParaSegundos(temTarefaSelecionada.tempo));
     }
-
+    
     return () => {
-      clearInterval(timer.current);
-    };
+      clearTimeout(timer.current);
+    }
   }, [temTarefaSelecionada]);
 
   function regressiva(contador: number = 0) {
@@ -40,7 +40,7 @@ export default function Cronometro() {
       <div className={style.relogioWrapper}>
         <Relogio tempo={tempo} />
       </div>
-      <Botao onClick={() => regressiva(tempo)}>Começar!</Botao>
+      <Botao disbled={!temTarefaSelecionada?.selecionado} onClick={() => regressiva(tempo)}>Começar!</Botao>
     </div>
   );
 }
